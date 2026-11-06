@@ -9,7 +9,7 @@
 import ts from "npm:typescript@5.9.3"
 
 const repoAt = Deno.args.indexOf("--repo")
-const upstream = repoAt >= 0 ? Deno.args[repoAt + 1] : "https://github.com/jeff-hykin/zenoh-gateway"
+const upstream = repoAt >= 0 ? Deno.args[repoAt + 1] : "https://github.com/dimensionalOS/zenoh-gateway"
 const commit = Deno.args.find((arg, i) => !arg.startsWith("--") && (repoAt < 0 || i !== repoAt + 1))
 if (!commit) {
     console.error("usage: vendor_zenoh_client.js <commit> [--repo <path or git url of zenoh-gateway>]")

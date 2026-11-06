@@ -186,7 +186,7 @@ Desktop ([Building it for Desktop](#building-it-for-desktop)). Pushes to pages t
 ### Frontend (browser)
 
 ```js
-import { DimAppFrontend } from "https://esm.sh/gh/jeff-hykin/dim-app@v0.22.1/source/frontend.js"
+import { DimAppFrontend } from "https://esm.sh/gh/dimensionalOS/ddtk@v0.22.1/source/frontend.js"
 
 const app = new DimAppFrontend() // connects to new URL("dim-app/ws", location.href)
 app.receiveRequest((kind, payload) => { ... }) // ← backend → us
@@ -196,7 +196,7 @@ app.send("setGoal", 350) // → our backend
 ### Backend (Deno)
 
 ```js
-import { DimAppBackend, dimContext } from "https://esm.sh/gh/jeff-hykin/dim-app@v0.22.1/source/backend.js"
+import { DimAppBackend, dimContext } from "https://esm.sh/gh/dimensionalOS/ddtk@v0.22.1/source/backend.js"
 
 const app = new DimAppBackend()
 const ctx = dimContext() // { name, url, path, dataDir, desktopUrl, zenohGatewayUrl, dimosDir, dimosPython, ... }
@@ -212,7 +212,7 @@ passes no flags or other variables.
   Desktop's loopback origin
 - `dataDir` — the app's own writable folder
 - `dimosDir` — the dimos checkout Desktop uses; `dimosPython` (also `python`) — its venv's python
-- `zenohGatewayUrl` — Desktop's [zenoh-gateway](https://github.com/jeff-hykin/zenoh-gateway) ; `zenohConnect` — the zenoh
+- `zenohGatewayUrl` — Desktop's [zenoh-gateway](https://github.com/dimensionalOS/zenoh-gateway) ; `zenohConnect` — the zenoh
   endpoint dimos modules are on
 - `desktopUrl` — Desktop's HTTP base URL
 
@@ -437,7 +437,7 @@ React: `<EmptyState layer title=… actions=… />` and `useAppInstalled(id)` fr
 `desktop_context`), so "it broke" comes with the error.
 
 ```js
-import { captureErrors, reportError } from "https://esm.sh/gh/jeff-hykin/dim-app@v0.22.1/source/errors.js"
+import { captureErrors, reportError } from "https://esm.sh/gh/dimensionalOS/ddtk@v0.22.1/source/errors.js"
 
 captureErrors() // uncaught errors + unhandled rejections; DimAppFrontend calls it for you ({ captureErrors: false } opts out)
 reportError("Couldn't save the map", error.stack, { level: "error" }) // handled failures worth knowing about
@@ -471,7 +471,7 @@ const off = onDesktopEvent("endpoints", ({ app, added, removed }) => {
 `/apps/<name>/`). Outside Desktop it does nothing and resolves to null; it never throws.
 
 ```js
-import { lowLevelAlert, notify } from "https://esm.sh/gh/jeff-hykin/dim-app@v0.22.1/source/notify.js"
+import { lowLevelAlert, notify } from "https://esm.sh/gh/dimensionalOS/ddtk@v0.22.1/source/notify.js"
 
 notify({ title: "Map saved", body: "office_2f.pgm", kind: "ok" }) // kind: ok | warn | agent | events
 notify({ title: "Robot fell", body: "G1 is down", kind: "warn", sound: "urgent", actions: [["Open", "open_app:g1"]] })
@@ -507,7 +507,7 @@ marks it done or skips it. It resolves when the session ends (`succeeded`, `fail
 presses Run within `timeout`); outside Desktop it resolves to `{ status: "unavailable" }` without running anything.
 
 ```js
-import { runCommand, runShell } from "https://esm.sh/gh/jeff-hykin/dim-app@v0.22.1/source/shell.js"
+import { runCommand, runShell } from "https://esm.sh/gh/dimensionalOS/ddtk@v0.22.1/source/shell.js"
 
 const result = await runShell({
     title: "Fix LAN discovery",
@@ -561,7 +561,7 @@ app pins a version. A folder from before v0.18.0 (files at its top, `dim-app/zen
 imports become `dim-app/source/zenoh.js` (or `dim-app/mod.js`).
 
 ```sh
-deno run -A https://raw.githubusercontent.com/jeff-hykin/dim-app/v0.21.0/tools/vendor.js frontend/src/dim-app --index frontend/index.html
+deno run -A https://raw.githubusercontent.com/dimensionalOS/ddtk/v0.21.0/tools/vendor.js frontend/src/dim-app --index frontend/index.html
 ```
 
 `--index` also keeps [first_paint.html](source/first_paint.html) in the app's `index.html` (inserted at the top of `<head>`,
@@ -570,8 +570,8 @@ color), so an app's first frame is already in Desktop's look. `initTheme()` also
 `{type: "dimos-ready"}` to Desktop once the themed page has painted, and Desktop fades the app's frame in.
 
 ```js
-import "./theme.css" // a vendored copy, or <link rel="stylesheet" href="https://esm.sh/gh/jeff-hykin/dim-app@v0.22.1/source/theme.css">
-import { initTheme, onThemeChange, themeColors } from "https://esm.sh/gh/jeff-hykin/dim-app@v0.22.1/source/theme.js"
+import "./theme.css" // a vendored copy, or <link rel="stylesheet" href="https://esm.sh/gh/dimensionalOS/ddtk@v0.22.1/source/theme.css">
+import { initTheme, onThemeChange, themeColors } from "https://esm.sh/gh/dimensionalOS/ddtk@v0.22.1/source/theme.js"
 
 initTheme() // Desktop's /theme.css, <html data-skin data-corners>, <body class="science [dark]">
 onThemeChange(() => renderer.setClearColor(themeColors().sceneBg)) // canvases + 3D: --scene-bg, --scene-grid, --cat-1..4
@@ -604,7 +604,7 @@ that output (an app with its own server writes its own `dimosApp`):
 ```nix
 {
     inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
-    inputs.dim-app.url = "github:jeff-hykin/dim-app/v0.22.3";
+    inputs.dim-app.url = "github:dimensionalOS/ddtk/v0.22.3";
     outputs = { self, nixpkgs, dim-app }: {
         packages = dim-app.lib.forAllSystems nixpkgs (pkgs: {
             dimosApp = dim-app.lib.mkDimosApp {

@@ -2,7 +2,7 @@
 //
 // Mirror image of DimAppBackend. An app page does:
 //
-//     import { DimAppFrontend } from "https://esm.sh/gh/jeff-hykin/dim-app@<ver>/frontend.js"
+//     import { DimAppFrontend } from "https://esm.sh/gh/dimensionalOS/ddtk@<ver>/frontend.js"
 //     const dimApp = new DimAppFrontend()
 //     dimApp.receiveRequest((...args) => { ... })   // ← backend sent us data
 //     dimApp.send("setGoal", 350)                   // → this app's backend
