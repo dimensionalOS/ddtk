@@ -18,7 +18,11 @@ export interface RosCodec {
     /** adds a type from its .msg text */
     define(type: string, msgText: string): Promise<void>
 }
-export const ROS_MODULES: { serialization: string; definitions: string; parser: string }
+export const ROS_MODULES: {
+    serialization: () => Promise<Record<string, unknown>>
+    definitions: () => Promise<Record<string, unknown>>
+    parser: () => Promise<Record<string, unknown>>
+}
 export const ROS_DISTROS: RosDistro[]
 /** "pkg/msg/Type" for "pkg/msg/Type", "pkg/Type" or "pkg::msg::dds_::Type_"; null otherwise */
 export function rosTypeName(name: string): string | null

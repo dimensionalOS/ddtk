@@ -186,7 +186,7 @@ Desktop ([Building it for Desktop](#building-it-for-desktop)). Pushes to pages t
 ### Frontend (browser)
 
 ```js
-import { DimAppFrontend } from "https://esm.sh/gh/dimensionalOS/ddtk@v0.22.1/source/frontend.js"
+import { DimAppFrontend } from "./dim-app/source/frontend.js"
 
 const app = new DimAppFrontend() // connects to new URL("dim-app/ws", location.href)
 app.receiveRequest((kind, payload) => { ... }) // ← backend → us
@@ -196,7 +196,7 @@ app.send("setGoal", 350) // → our backend
 ### Backend (Deno)
 
 ```js
-import { DimAppBackend, dimContext } from "https://esm.sh/gh/dimensionalOS/ddtk@v0.22.1/source/backend.js"
+import { DimAppBackend, dimContext } from "https://raw.githubusercontent.com/dimensionalOS/ddtk/v0.22.1/source/backend.js"
 
 const app = new DimAppBackend()
 const ctx = dimContext() // { name, url, path, dataDir, desktopUrl, zenohGatewayUrl, dimosDir, dimosPython, ... }
@@ -288,7 +288,7 @@ await app.ros.define("my_msgs/msg/Battery", "float32 percent\nstd_msgs/Header he
 
 Every standard ROS 2 message (std_msgs, geometry_msgs, sensor_msgs, nav_msgs, tf2_msgs, visualization_msgs, …) decodes
 with Foxglove's `@foxglove/rosmsg2-serialization@3.1.2` and `@foxglove/rosmsg-msgs-common@3.3.0` (and
-`@foxglove/rosmsg@5.0.5` for `define()`), imported from esm.sh at pinned versions only when a ROS type is first used.
+`@foxglove/rosmsg@5.0.5` for `define()`), vendored in [source/vendor/ros/](source/vendor/ros) (bundled from npm at those exact versions by [tools/vendor_ros.js](tools/vendor_ros.js)) and loaded only when a ROS type is first used.
 `subscribeKey(keyExpr, ...)` is `subscribe()` for any zenoh key: a sample is decoded as ROS CDR when its key has an
 rmw_zenoh type chunk (`<domain>/<topic>/<pkg>::msg::dds_::<Type>_/<hash>`), when its encoding is CDR with a schema
 (`application/cdr;sensor_msgs/msg/Image`), or when the subscription passes `rosType` (zenoh-bridge-ros2dds keys are
@@ -437,7 +437,7 @@ React: `<EmptyState layer title=… actions=… />` and `useAppInstalled(id)` fr
 `desktop_context`), so "it broke" comes with the error.
 
 ```js
-import { captureErrors, reportError } from "https://esm.sh/gh/dimensionalOS/ddtk@v0.22.1/source/errors.js"
+import { captureErrors, reportError } from "./dim-app/source/errors.js"
 
 captureErrors() // uncaught errors + unhandled rejections; DimAppFrontend calls it for you ({ captureErrors: false } opts out)
 reportError("Couldn't save the map", error.stack, { level: "error" }) // handled failures worth knowing about
@@ -471,7 +471,7 @@ const off = onDesktopEvent("endpoints", ({ app, added, removed }) => {
 `/apps/<name>/`). Outside Desktop it does nothing and resolves to null; it never throws.
 
 ```js
-import { lowLevelAlert, notify } from "https://esm.sh/gh/dimensionalOS/ddtk@v0.22.1/source/notify.js"
+import { lowLevelAlert, notify } from "./dim-app/source/notify.js"
 
 notify({ title: "Map saved", body: "office_2f.pgm", kind: "ok" }) // kind: ok | warn | agent | events
 notify({ title: "Robot fell", body: "G1 is down", kind: "warn", sound: "urgent", actions: [["Open", "open_app:g1"]] })
@@ -507,7 +507,7 @@ marks it done or skips it. It resolves when the session ends (`succeeded`, `fail
 presses Run within `timeout`); outside Desktop it resolves to `{ status: "unavailable" }` without running anything.
 
 ```js
-import { runCommand, runShell } from "https://esm.sh/gh/dimensionalOS/ddtk@v0.22.1/source/shell.js"
+import { runCommand, runShell } from "./dim-app/source/shell.js"
 
 const result = await runShell({
     title: "Fix LAN discovery",
@@ -570,8 +570,8 @@ color), so an app's first frame is already in Desktop's look. `initTheme()` also
 `{type: "dimos-ready"}` to Desktop once the themed page has painted, and Desktop fades the app's frame in.
 
 ```js
-import "./theme.css" // a vendored copy, or <link rel="stylesheet" href="https://esm.sh/gh/dimensionalOS/ddtk@v0.22.1/source/theme.css">
-import { initTheme, onThemeChange, themeColors } from "https://esm.sh/gh/dimensionalOS/ddtk@v0.22.1/source/theme.js"
+import "./dim-app/source/theme.css" // the vendored copy (vendor.js, above)
+import { initTheme, onThemeChange, themeColors } from "./dim-app/source/theme.js"
 
 initTheme() // Desktop's /theme.css, <html data-skin data-corners>, <body class="science [dark]">
 onThemeChange(() => renderer.setClearColor(themeColors().sceneBg)) // canvases + 3D: --scene-bg, --scene-grid, --cat-1..4

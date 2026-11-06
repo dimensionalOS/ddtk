@@ -1,5 +1,5 @@
-// ROS 2 messages (CDR) for pages: Foxglove's codec and the standard message definitions, imported from esm.sh the
-// first time a ROS type is used, so a page that never sees one never loads them.
+// ROS 2 messages (CDR) for pages: Foxglove's codec and the standard message definitions (vendored in vendor/ros/ by
+// tools/vendor_ros.js), imported the first time a ROS type is used, so a page that never sees one never loads them.
 //
 //     import { rosCodec } from "./dim-app/source/ros.js"
 //     const ros = rosCodec() // or app.ros on a DimApp
@@ -11,12 +11,11 @@
 // others are added with `define(type, ".msg text")`. Bytes are CDR with its 4-byte encapsulation header, as DDS,
 // rmw_zenoh and zenoh-bridge-ros2dds carry them.
 
-// exact versions, dependencies too (esm.sh otherwise resolves their semver ranges to whatever is newest)
-const DEPS = "?deps=@foxglove/cdr@3.5.1,@foxglove/rostime@1.1.3,@foxglove/message-definition@0.5.0"
+// (literal paths, so vendor.js brings them along with this file and a bundler splits them into lazy chunks)
 export const ROS_MODULES = {
-    serialization: `https://esm.sh/@foxglove/rosmsg2-serialization@3.1.2${DEPS}`,
-    definitions: `https://esm.sh/@foxglove/rosmsg-msgs-common@3.3.0${DEPS}`,
-    parser: `https://esm.sh/@foxglove/rosmsg@5.0.5${DEPS}`,
+    serialization: () => import("./vendor/ros/serialization.js"),
+    definitions: () => import("./vendor/ros/definitions.js"),
+    parser: () => import("./vendor/ros/parser.js"),
 }
 export const ROS_DISTROS = ["humble", "iron", "jazzy", "kilted", "lyrical"]
 
@@ -59,8 +58,8 @@ export function rosCodec({ distro = "jazzy" } = {}) {
 
     const load = () => {
         loading ??= Promise.all([
-            import(/* @vite-ignore */ ROS_MODULES.serialization),
-            import(/* @vite-ignore */ ROS_MODULES.definitions),
+            ROS_MODULES.serialization(),
+            ROS_MODULES.definitions(),
         ]).then(
             ([serialization, definitions]) => {
                 modules = { ...serialization, standard: definitions[`ros2${distro}`] }
@@ -152,7 +151,7 @@ export function rosCodec({ distro = "jazzy" } = {}) {
             if (!name) {
                 throw new Error(`[dim-app] ros: not a ROS type name: ${JSON.stringify(type)}`)
             }
-            const [parser] = await Promise.all([import(/* @vite-ignore */ ROS_MODULES.parser), load()])
+            const [parser] = await Promise.all([ROS_MODULES.parser(), load()])
             const shortName = name.replace("/msg/", "/")
             const [root, ...nested] = parser.default.parse(msgText, { ros2: true, skipTypeFixup: true })
             const all = [

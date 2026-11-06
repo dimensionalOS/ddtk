@@ -5,7 +5,7 @@
 // involved.
 //
 // App author writes:
-//     import { DimAppBackend, dimContext } from "https://esm.sh/gh/dimensionalOS/ddtk@<ver>/backend.js"
+//     import { DimAppBackend, dimContext } from "https://raw.githubusercontent.com/dimensionalOS/ddtk/<tag>/source/backend.js"
 //     const dimApp = new DimAppBackend()        // name comes from the registry serve.js seeded
 //     dimApp.onReceive((...args) => { ... })     // ← a frontend called us
 //     dimApp.send("hello", { n: 1 })             // → all of this app's frontends

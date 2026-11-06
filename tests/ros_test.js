@@ -1,13 +1,8 @@
-// deno test -A tests/ros_test.js (the codec tests import Foxglove's modules from esm.sh: skipped offline)
+// deno test -A tests/ros_test.js
 import { assert, assertEquals, assertRejects } from "jsr:@std/assert@1"
-import { ROS_MODULES, rosCodec, rosTypeName, rosTypeOfSample } from "../source/ros.js"
+import { rosCodec, rosTypeName, rosTypeOfSample } from "../source/ros.js"
 import { DimApp } from "../source/dim_app.js"
 import { fakes, tick } from "./test_fakes.js"
-
-const online = await fetch(ROS_MODULES.definitions, { signal: AbortSignal.timeout(5000) })
-    .then(async (response) => (await response.body?.cancel(), response.ok))
-    .catch(() => false)
-const onlineTest = (name, fn) => Deno.test({ name, ignore: !online, fn })
 
 Deno.test("rosTypeName: every spelling of a ROS type", () => {
     assertEquals(rosTypeName("sensor_msgs/msg/Image"), "sensor_msgs/msg/Image")
@@ -74,7 +69,7 @@ const ROUND_TRIPS = {
     },
 }
 
-onlineTest(
+Deno.test(
     "ros: CDR round trips for standard types (std_msgs, geometry_msgs, sensor_msgs, nav_msgs, tf2_msgs)",
     async () => {
         const ros = rosCodec()
@@ -90,12 +85,12 @@ onlineTest(
     },
 )
 
-onlineTest("ros: known CDR bytes decode (std_msgs/String 'hi', as DDS sends it)", async () => {
+Deno.test("ros: known CDR bytes decode (std_msgs/String 'hi', as DDS sends it)", async () => {
     const bytes = new Uint8Array([0, 1, 0, 0, 3, 0, 0, 0, 104, 105, 0, 0])
     assertEquals(await rosCodec().decode("std_msgs/msg/String", bytes), { data: "hi" })
 })
 
-onlineTest("ros: unknown types fail with a hint; define() adds one from .msg text; distros", async () => {
+Deno.test("ros: unknown types fail with a hint; define() adds one from .msg text; distros", async () => {
     const ros = rosCodec({ distro: "humble" })
     await assertRejects(() => ros.encode("my_msgs/msg/Battery", {}), Error, "ros.define")
     await ros.define(
@@ -106,7 +101,7 @@ onlineTest("ros: unknown types fail with a hint; define() adds one from .msg tex
     assertEquals(await ros.decode("my_msgs/Battery", await ros.encode("my_msgs/msg/Battery", value)), value)
 })
 
-onlineTest(
+Deno.test(
     "DimApp.subscribeKey: rmw_zenoh keys decode as CDR (in order while the codec loads); dimos keys don't",
     async () => {
         const fake = fakes()
@@ -144,7 +139,7 @@ onlineTest(
     },
 )
 
-onlineTest(
+Deno.test(
     "DimApp.subscribeKey: { rosType } for zenoh-bridge-ros2dds keys; a CDR encoding names the type",
     async () => {
         const fake = fakes()
